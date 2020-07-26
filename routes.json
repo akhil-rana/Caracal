@@ -288,28 +288,28 @@
     "route":"/data/Configuration/find",
     "method":"get",
     "handlers":[
-      {"function":"mongoFind", "args": ["camic", "configuration"]}
+      {"function":"mongoFind", "args": ["camic", "config"]}
     ]
   },{
     "route":"/data/Configuration/post",
     "method":"post",
     "handlers":[
       {"function":"permissionHandler", "args": [["Admin", "Editor"]]},
-      {"function":"mongoAdd", "args": ["camic", "configuration"]}
+      {"function":"mongoAdd", "args": ["camic", "config"]}
     ]
   },{
     "route":"/data/Configuration/delete",
     "method":"delete",
     "handlers":[
       {"function":"permissionHandler", "args": [["Admin", "Editor"]]},
-      {"function":"mongoDelete", "args": ["camic", "configuration"]}
+      {"function":"mongoDelete", "args": ["camic", "config"]}
     ]
   },{
     "route":"/data/Configuration/update",
     "method":"post",
     "handlers":[
       {"function":"permissionHandler", "args": [["Admin", "Editor"]]},
-      {"function":"mongoUpdate", "args": ["camic", "configuration"]}
+      {"function":"mongoUpdate", "args": ["camic", "config"]}
     ]
   },
 
