@@ -1,10 +1,11 @@
 var mongo = require('mongodb');
 
 var MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost';
+var MONGO_DB = process.env.MONGO_DB || 'camic';
 var DISABLE_SEC = (process.env.DISABLE_SEC === 'true') || false;
 
 
-function mongoFind(database, collection, query) {
+function mongoFind(collection, query) {
   return new Promise(function(res, rej) {
     try {
       mongo.MongoClient.connect(MONGO_URI, function(err, db) {
@@ -14,7 +15,7 @@ function mongoFind(database, collection, query) {
           if (query['_id']) {
             query['_id'] = new mongo.ObjectID(query['_id']);
           }
-          var dbo = db.db(database);
+          var dbo = db.db(MONGO_DB);
           dbo.collection(collection).find(query).toArray(function(err, result) {
             if (err) {
               rej(err);
@@ -36,14 +37,14 @@ function mongoFind(database, collection, query) {
   });
 }
 
-function mongoDistinct(database, collection, upon, query) {
+function mongoDistinct(collection, upon, query) {
   return new Promise(function(res, rej) {
     try {
       mongo.MongoClient.connect(MONGO_URI, function(err, db) {
         if (err) {
           rej(err);
         } else {
-          var dbo = db.db(database);
+          var dbo = db.db(MONGO_DB);
           dbo.collection(collection).distinct(upon, query, function(err, result) {
             if (err) {
               rej(err);
@@ -60,7 +61,7 @@ function mongoDistinct(database, collection, upon, query) {
   });
 }
 
-function mongoAdd(database, collection, data) {
+function mongoAdd(collection, data) {
   return new Promise(function(res, rej) {
     // if data not array, make it one
     if (!Array.isArray(data)) {
@@ -71,7 +72,7 @@ function mongoAdd(database, collection, data) {
         if (err) {
           rej(err);
         } else {
-          var dbo = db.db(database);
+          var dbo = db.db(MONGO_DB);
           dbo.collection(collection).insertMany(data, function(err, result) {
             if (err) {
               rej(err);
@@ -88,14 +89,14 @@ function mongoAdd(database, collection, data) {
   });
 }
 
-function mongoDelete(database, collection, query) {
+function mongoDelete(collection, query) {
   return new Promise(function(res, rej) {
     mongo.MongoClient.connect(MONGO_URI, function(err, db) {
       try {
         if (err) {
           rej(err);
         } else {
-          var dbo = db.db(database);
+          var dbo = db.db(MONGO_DB);
           if (query['_id']) {
             query['_id'] = new mongo.ObjectID(query['_id']);
           }
@@ -116,14 +117,14 @@ function mongoDelete(database, collection, query) {
   });
 }
 
-function mongoUpdate(database, collection, query, newVals) {
+function mongoUpdate(collection, query, newVals) {
   return new Promise(function(res, rej) {
     try {
       mongo.MongoClient.connect(MONGO_URI, function(err, db) {
         if (err) {
           rej(err);
         } else {
-          var dbo = db.db(database);
+          var dbo = db.db(MONGO_DB);
           if (query['_id']) {
             query['_id'] = new mongo.ObjectID(query['_id']);
           }
@@ -142,75 +143,6 @@ function mongoUpdate(database, collection, query, newVals) {
       rej(error);
     }
   });
-}
-
-var General = {};
-General.find = function(db, collection){
-  return function(req, res, next) {
-    var query = req.query;
-    delete query.token;
-    mongoFind(db, collection, query).then((x) => {
-      req.data = x;
-      next();
-    }).catch((e) => next(e));
-  };
-}
-
-General.get = function(db, collection){
-  return function(req, res, next) {
-    var query = req.query;
-    delete query.token;
-    mongoFind(db, collection, {_id: req.query.id}).then((x) => {
-      req.data = x;
-      next();
-    }).catch((e) => next(e));
-  };
-}
-
-General.distinct = function(db, collection, upon){
-  return function(req, res, next) {
-    var query = req.query;
-    delete query.token;
-    mongoDistinct(db, collection, upon, query).then((x) => {
-      req.data = x;
-      next();
-    }).catch((e) => next(e));
-  };
-}
-
-General.add = function(db, collection){
-  return function(req, res, next) {
-    var data = JSON.parse(req.body);
-    mongoAdd(db, collection, data).then((x) => {
-      req.data = x;
-      next();
-    }).catch((e) => next(e));
-  };
-}
-
-General.update = function(db, collection){
-  return function(req, res, next) {
-    var query = req.query;
-    delete query.token;
-    var newVals = {
-      $set: JSON.parse(req.body),
-    };
-    mongoUpdate(db, collection, query, newVals).then((x) => {
-      req.data = x;
-      next();
-    }).catch((e) => next(e));
-  };
-}
-
-General.delete = function(db, collection){
-  return function(req, res, next) {
-    var query = req.query;
-    delete query.token;
-    mongoDelete(db, collection, query).then((x) => {
-      req.data = x;
-      next();
-    }).catch((e) => next(e));
-  };
 }
 
 var Slide = {};
@@ -735,5 +667,4 @@ dataHandlers.Log = Log;
 dataHandlers.Mark = Mark;
 dataHandlers.Template = Template;
 dataHandlers.User = User;
-dataHandlers.General = General;
 module.exports = dataHandlers;
