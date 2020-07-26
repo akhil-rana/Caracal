@@ -89,7 +89,7 @@ var HANDLERS = {
     return dataHandlers.Mark.multi
   },
   "markSpatial": function(){
-    return dataHandlers.Mark.spatial
+    return dataHandlers.Mark.multi
   },
   "heatmapTypes": function(){
     return dataHandlers.Heatmap.types
