@@ -272,6 +272,7 @@ Mark.multi = function(req, res, next) {
       $lt: req.query.footprint,
     };
   }
+  console.log(query)
   mongoFind('camic', 'mark', query).then((x) => {
     req.data = x;
     next();
