@@ -149,7 +149,7 @@
     ]
   },{
     "route":"/data/Mark/spatial",
-    "method":"get",
+    "method":"post",
     "handlers":[
       {"function":"markSpatial", "args": []}
     ]
