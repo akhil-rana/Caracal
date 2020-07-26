@@ -218,28 +218,23 @@ var Mark = {};
 Mark.spatial = function(req, res, next) {
   var query = req.query;
   delete query.token;
-  // handle  x0, y0, x1, y1, footprint
+  // handle  x0, y0, x1, y1
   if (req.query.x0 && req.query.x1) {
     query.x = {
-      $gt: parseFloat(req.query.x0),
-      $lt: parseFloat(req.query.x1),
+      $gt: req.query.x0,
+      $lt: req.query.x1,
     };
   }
   delete query.x0;
   delete query.x1;
   if (req.query.y0 && req.query.y1) {
     query.y = {
-      $gt: parseFloat(req.query.y0),
-      $lt: parseFloat(req.query.y1),
+      $gt: req.query.y0,
+      $lt: req.query.y1,
     };
   }
   delete query.y0;
   delete query.y1;
-  if (query.footprint) {
-    query.footprint = {
-      $lt: parseFloat(query.footprint),
-    };
-  }
   mongoFind('camic', 'mark', query).then((x) => {
     req.data = x;
     next();
@@ -248,7 +243,7 @@ Mark.spatial = function(req, res, next) {
 
 Mark.multi = function(req, res, next) {
   var query = req.query;
-  console.log('before: ', JSON.stringify(query))
+  console.log("before: ", JSON.stringify(query))
   if (query.nameList) {
     query['provenance.analysis.execution_id'] = {
       '$in': JSON.parse(query.nameList),
@@ -259,26 +254,27 @@ Mark.multi = function(req, res, next) {
   // handle  x0, y0, x1, y1, footprint
   if (req.query.x0 && req.query.x1) {
     query.x = {
-      '$gt': parseFloat(req.query.x0),
-      '$lt': parseFloat(req.query.x1),
+      $gt: req.query.x0,
+      $lt: req.query.x1,
     };
   }
   delete query.x0;
   delete query.x1;
   if (req.query.y0 && req.query.y1) {
     query.y = {
-      '$gt': parseFloat(req.query.y0),
-      '$lt': parseFloat(req.query.y1),
+      $gt: req.query.y0,
+      $lt: req.query.y1,
     };
   }
   delete query.y0;
   delete query.y1;
-  if (query.footprint) {
+  if (req.query.footprint) {
     query.footprint = {
-      '$lt': parseFloat(query.footprint),
+      $lt: req.query.footprint,
     };
   }
-  console.log('after: ', JSON.stringify(query))
+  delete query.footprint;
+  console.log("after: ", JSON.stringify(query))
   mongoFind('camic', 'mark', query).then((x) => {
     req.data = x;
     next();
